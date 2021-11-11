@@ -350,7 +350,7 @@ Remove stop words and our search terms.
 # remove urls, fancy formatting, etc. in other words, clean the text content
 dorian_text <- dorian %>%
   select(text) %>%
-  plain_tweets()
+  plain_tweets() #removes special characters, urls, stuff we're not interested in
 
 # parse out words from tweet text
 dorian_words <- dorian_text %>% unnest_tokens(word, text)
@@ -656,3 +656,60 @@ ggplot() +
     axis.title.y = element_blank()
   )
 ```
+
+# Our New Map: Normalized Difference of Tweets 
+```{r}
+ggplot() +
+  geom_sf(data = counties, 
+    aes(fill = cut_interval(ntdi, 5)), color = "grey", lwd = 0.05) +
+  scale_fill_brewer(palette = "PuRd") +
+  guides(fill = guide_legend(title = "Level of Increased Twitter Activity")) +
+  labs(title = "Increased Twitter Activity During Hurricane Dorian") +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  ) +
+  xlim(-96, -67) +
+  ylim(24, 47)
+```
+
+# Our Other New Map: Tweet Density
+```{r}
+counties <- counties %>%
+  mutate(dorrate_fake = if_else(dorrate == 0,
+                                0.1,
+                                dorrate)) %>%
+  mutate(dorrate_log = log(dorrate_fake))
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = counties, 
+    aes(fill = cut_interval(dorrate_log, 5)), color = "grey", lwd = 0.05) +
+  scale_fill_brewer(palette = "YlGnBu") +
+  guides(fill = guide_legend(title = "Density of Twitter Activity")) +
+  labs(title = "Increased Twitter Activity During Hurricane Dorian") +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank()
+  ) +
+  xlim(-96, -67) +
+  ylim(24, 47)
+
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
